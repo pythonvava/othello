@@ -27,6 +27,10 @@ LOWER_RIGHT = 2**5 # =32
 LOWER = 2**6 # =64
 LOWER_LEFT = 2**7 # =128
 
+# 手の表現
+IN_ALPHABET = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
+IN_NUMBER = ['1', '2', '3', '4', '5', '6', '7', '8']
+
 
 """
 ボードの表現
@@ -298,7 +302,6 @@ class Board:
                 y_tmp += 1
 
         ## 下
-        print(dir, LOWER)
         if dir & LOWER: # AND演算子
 
             y_tmp = y + 1
@@ -379,32 +382,78 @@ class Board:
                 if dir != 0:
                     self.MovablePos[x, y] = True
                 
-                
+
+    """
+    オセロ盤面の表示
+    """
+    def display(self):
+
+        # 横軸
+        print(' a b c d e f g h')
+        # 縦軸方向へのマスのループ
+        for y in range(1, 9):
+
+            # 縦軸
+            print(y, end="")
+            # 横軸方向へのマスのループ
+            for x in range(1, 9):
+
+                # マスの種類(数値)をgridに代入
+                grid = self.RawBoard[x, y]
+
+                # マスの種類によって表示を変化
+                if grid == EMPTY: # 空きマス
+                    print('□', end="")
+                elif grid == WHITE: # 白石
+                    print('●', end="")
+                elif grid == BLACK: # 黒石
+                    print('〇', end="")
+
+            # 最後に改行
+            print()
+
+
+    """
+    入力された手の形式をチェック
+    """
+    def checkIN(self, IN):
+
+        # INが空でないかをチェック
+        if not IN:
+            return False
+
+        # INの1文字目と2文字目がそれぞれa~h,1~8の範囲内であるかをチェック
+        if IN[0] in IN_ALPHABET:
+            if IN[1] in IN_NUMBER:
+                return True
+
+        return False
+
+
+"""
+メインコード
+"""
+
 # ボートインスタンスの作成
 board = Board()
 
+# 盤面の表示
+board.display()
+
+# 手を入力
+print('手を入力してください：', end='')
+IN = input()
+
+# 入力手をチェック
+if board.checkIN(IN):
+    x = IN_ALPHABET.index(IN[0]) + 1
+    y = IN_NUMBER.index(IN[1]) + 1
+else:
+    print('正しい形式(例：f5)で入力してください')
+
 # 手を打つ
-if not board.move(2, 6):
+if not board.move(x, y):
     print('そこには置けません')
 
-# テスト
-# RawBoardの中身を確認
-print('RawBoard')
-for y in range(10):
-    for x in range(10):
-        print('{:^3}'.format(board.RawBoard[x, y]), end = '')
-    print()
-
-# MovablePosの中身を確認
-print('MovablePos')
-for y in range(10):
-    for x in range(10):
-        print('{:^3}'.format(board.MovablePos[x, y]), end = '')
-    print()
-
-# MovableDirの中身を確認
-print('MovableDir')
-for y in range(10):
-    for x in range(10):
-        print('{:^3}'.format(board.MovableDir[x, y]), end = '')
-    print()
+# 盤面の表示
+board.display()
